@@ -30,18 +30,18 @@ const pool=mysql.createPool({
 })
 
 //report
-app.get('/api/books', (_res,res)=>{
-    pool.query('SELECT * FROM books', (err,_rows,_fields)=>{
+app.get('/api/tblProfile', (_res,res)=>{
+    pool.query('SELECT * FROM tblProfile', (err,_rows,_fields)=>{
         if (err) throw err;
         res.json(_rows);
     });
 });
 
 //search
-app.get('/api/books/:id',(_res,res)=>{
+app.get('/api/tblProfile/:id',(_res,res)=>{
     const id = _res.params.id;
     pool.query(
-        "SELECT * FROM books WHERE id = ?", [id], (err, _rows, _fields) => {
+        "SELECT * FROM tblProfile WHERE id = ?", [id], (err, _rows, _fields) => {
             if (err) throw err;
             if (_rows.length > 0) {
                 res.json(_rows);
@@ -53,13 +53,13 @@ app.get('/api/books/:id',(_res,res)=>{
 });
 
 //create
-app.post('/api/books',(_res,res)=>{
-    const title=_res.body.title;
-    const author=_res.body.author;
-    const year=_res.body.year;
+app.post('/api/tblProfile',(_res,res)=>{
+    const name=_res.body.name;
+    const email=_res.body.email;
+    const role=_res.body.role;
 
     pool.query(
-        "INSERT INTO books (title, author, year) VALUES (?,?,?)", [title, author, year], (err, _rows, _fields) => {
+        "INSERT INTO tblProfile (name, email, role) VALUES (?,?,?)", [name, email, role], (err, _rows, _fields) => {
             if (err) throw err;
             res.json({ msg: `Data Inserted Successfully` });
         },
@@ -67,15 +67,15 @@ app.post('/api/books',(_res,res)=>{
 });
 
 //update
-app.put("/api/books", (_res, res) => {
-    const title = _res.body.title;
-    const author = _res.body.author;
-    const year = _res.body.year;
+app.put("/api/tblProfile", (_res, res) => {
+    const name = _res.body.name;
+    const email = _res.body.email;
+    const role = _res.body.role;
     const id = _res.body.id;
 
     pool.query(
-        "UPDATE books SET title = ?, author = ?, year = ?,  = ? WHERE id=?",
-        [title, author, year, id],
+        "UPDATE tblProfile SET name = ?, email = ?, role = ?,  = ? WHERE id=?",
+        [name, email, role, id],
         (err, _rows, _fields) => {
             if (err) throw err;
             res.json ({msg: `Data Updated Successfully`});
@@ -84,10 +84,10 @@ app.put("/api/books", (_res, res) => {
 });
 
 //delete
-app.delete("/api/books/", (_res, res) => {
+app.delete("/api/tblProfile/", (_res, res) => {
     const id = _res.body.id;
     pool.query(
-        "DELETE FROM books WHERE id = ?", [id], (err, _rows, _fields) => {
+        "DELETE FROM tblProfile WHERE id = ?", [id], (err, _rows, _fields) => {
             if (err) throw err;
             res.json({ msg: `Data Deleted Successfully` });
         },
@@ -95,12 +95,12 @@ app.delete("/api/books/", (_res, res) => {
 });
 
 //POST
-app.post('/api/books',(_res,res)=>{
-    const title=_res.body.title;
-    const author=_res.body.author;
-    const year=_res.body.year;
+app.post('/api/tblProfile',(_res,res)=>{
+    const name=_res.body.name;
+    const email=_res.body.email;
+    const role=_res.body.role;
 
-    connection.execute(`INSERT INTO books(title, author, year) VALUES (?,?,?)`, [title, author, year ], (err,_rows, _fields) => {
+    connection.execute(`INSERT INTO tblProfile(name, email, role) VALUES (?,?,?)`, [name, email, role ], (err,_rows, _fields) => {
         if (err) throw err 
             res.json({ msg: `Data Inserted Successfully` });
     });
