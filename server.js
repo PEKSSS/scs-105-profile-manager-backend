@@ -32,7 +32,10 @@ const pool=mysql.createPool({
 //report
 app.get('/api/tblProfile', (_res,res)=>{
     pool.query('SELECT * FROM tblProfile', (err,_rows,_fields)=>{
-        if (err) throw err;
+        if (err) {
+            console.error(err);
+            return res.status(500).json({ msg: "Failed to fetch profiles" });
+        }
         res.json(_rows);
     });
 });
@@ -42,7 +45,10 @@ app.get('/api/tblProfile/:id',(_res,res)=>{
     const id = _res.params.id;
     pool.query(
         "SELECT * FROM tblProfile WHERE id = ?", [id], (err, _rows, _fields) => {
-            if (err) throw err;
+            if (err) {
+                console.error(err);
+                return res.status(500).json({ msg: "Failed to fetch profile" });
+            }
             if (_rows.length > 0) {
                 res.json(_rows);
             } else {
@@ -60,7 +66,10 @@ app.post('/api/tblProfile',(_res,res)=>{
 
     pool.query(
         "INSERT INTO tblProfile (name, email, role) VALUES (?,?,?)", [name, email, role], (err, _rows, _fields) => {
-            if (err) throw err;
+            if (err) {
+                console.error(err);
+                return res.status(500).json({ msg: "Insert failed" });
+            }
             res.json({ msg: `Data Inserted Successfully` });
         },
     );
@@ -74,10 +83,16 @@ app.put("/api/tblProfile", (_res, res) => {
     const id = _res.body.id;
 
     pool.query(
-        "UPDATE tblProfile SET name = ?, email = ?, role = ?,  = ? WHERE id=?",
+        "UPDATE tblProfile SET name = ?, email = ?, role = ? WHERE id = ?",
         [name, email, role, id],
         (err, _rows, _fields) => {
-            if (err) throw err;
+            if (err) {
+                console.error(err);
+                return res.status(500).json({ msg: "Update failed" });
+            }
+            if (_rows.affectedRows === 0) {
+                return res.status(404).json({ msg: "Profile not found" });
+            }
             res.json ({msg: `Data Updated Successfully`});
         },
     );
@@ -88,22 +103,16 @@ app.delete("/api/tblProfile/", (_res, res) => {
     const id = _res.body.id;
     pool.query(
         "DELETE FROM tblProfile WHERE id = ?", [id], (err, _rows, _fields) => {
-            if (err) throw err;
+            if (err) {
+                console.error(err);
+                return res.status(500).json({ msg: "Delete failed" });
+            }
+            if (_rows.affectedRows === 0) {
+                return res.status(404).json({ msg: "Profile not found" });
+            }
             res.json({ msg: `Data Deleted Successfully` });
         },
     );
-});
-
-//POST
-app.post('/api/tblProfile',(_res,res)=>{
-    const name=_res.body.name;
-    const email=_res.body.email;
-    const role=_res.body.role;
-
-    connection.execute(`INSERT INTO tblProfile(name, email, role) VALUES (?,?,?)`, [name, email, role ], (err,_rows, _fields) => {
-        if (err) throw err 
-            res.json({ msg: `Data Inserted Successfully` });
-    });
 });
 
 app.listen(PORT,()=>{
